@@ -1,0 +1,270 @@
+:root {
+    --cor-laranja: #FF8C42; 
+    --cor-verde: #4CAF50; 
+    --cor-fundo-claro: #F9FBE7; 
+    --cor-texto: #212121;
+    --sombra: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: var(--cor-fundo-claro);
+    color: var(--cor-texto);
+    line-height: 1.6;
+}
+
+/* --- Cabeçalho --- */
+header {
+    background-color: var(--cor-laranja);
+    color: white;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+    padding: 15px 20px;
+    box-shadow: var(--sombra);
+    text-align: center;
+}
+
+header h2 {
+    margin: 0;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+header a {
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 5px 10px;
+    border: 1px solid white;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+header a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Conteúdo Principal e Responsividade --- */
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto; 
+}
+
+/* Estilização de Seção (Cards) */
+h3, h4 {
+    color: var(--cor-verde);
+    border-bottom: 2px solid var(--cor-laranja);
+    padding-bottom: 5px;
+    margin-top: 25px;
+    font-size: 1.2em;
+}
+
+hr {
+    border: 0;
+    border-top: 1px dashed var(--cor-laranja);
+    margin: 20px 0;
+}
+
+/* Inputs e Selects */
+input[type=text], input[type=number], select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: var(--cor-laranja);
+    box-shadow: 0 0 5px rgba(255, 140, 66, 0.5);
+    outline: none;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Layout dos Itens de Adição de Material (Mobile-first: empilhado) */
+#new-material-section, .material-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    margin-bottom: 20px;
+}
+
+/* Agrupamento de Dropdowns e Quantidade */
+.material-controls > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Botões */
+button {
+    background: var(--cor-verde);
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.1s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+button:hover {
+    background: #388E3C;
+    transform: translateY(-1px);
+}
+
+button[type="submit"] {
+    background: var(--cor-laranja);
+    width: 100%;
+    margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+    background: #E67E22; 
+}
+
+/* Lista de Materiais Adicionados */
+#lista-materiais {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+#lista-materiais li {
+    background: #E8F5E9; 
+    padding: 8px 15px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    border-left: 5px solid var(--cor-verde);
+    font-size: 0.95em;
+}
+
+/* Dica (Info Box) */
+p.info {
+    background-color: #FFFDE7;
+    border: 1px solid #FFE082;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    color: #5D4037;
+    margin-top: 30px;
+}
+
+/* Estilo para os itens adicionados dinamicamente na tela */
+.material {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column; 
+    gap: 5px;
+}
+
+.material > div {
+    margin-bottom: 5px;
+}
+
+.material input[type=number] {
+    width: 60px; 
+    display: inline-block;
+    margin: 0;
+}
+
+
+/* --- Responsividade (Desktop/Tablet) --- */
+@media (min-width: 768px) {
+    
+    header {
+        flex-direction: row; 
+        justify-content: space-between;
+    }
+    
+    header h2 {
+        font-size: 1.6em;
+    }
+
+    /* Layout em linha para adicionar material */
+    .material-controls > div {
+        flex-direction: row;
+        align-items: flex-end; 
+    }
+    
+    .material-controls label {
+         margin-top: 0;
+    }
+
+    /* Distribui o espaço entre os inputs e o botão */
+    .material-controls > div > * {
+        flex: 1; 
+    }
+
+    .material-controls button {
+        flex-shrink: 0; 
+        width: auto;
+    }
+    
+    #new-material-section {
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 15px;
+    }
+    
+    #new-material-section > label {
+        flex: 1;
+    }
+    
+    #new-material-section > button {
+        width: auto;
+        flex-shrink: 0;
+    }
+    
+    /* Ajuste do layout dos materiais extras adicionados */
+    .material {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+/* --- Rodapé --- */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.85em;
+    margin-top: 40px;
+}
+
+footer a {
+    color: var(--cor-laranja);
+    text-decoration: none;
+    font-weight: bold;
+}
