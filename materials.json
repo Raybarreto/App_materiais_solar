@@ -118,14 +118,14 @@
     "Placa Cega, 4x4''"
     
   ],  
-  "P  ONTOS DE USO (SOBREPOR)": [
+  "PONTOS DE USO (SOBREPOR)": [
     "Interruptor Simples, Caixa de sobrepor (conjunto)",
     "Tomada Simples, Caixa de sobrepor 10A (conjunto)",
     "Tomada Simples, Caixa de sobrepor 20A (conjunto)",
     "Tomada Externa, Proteção IP54 (conjunto)"
     
   ],  
-  "I  LUMINAÇÃO": [
+  "ILUMINAÇÃO": [
     "Spot LED, Embutir, Spot LED direcionável 5W",
     "Spot LED, Embutir, Spot LED direcionável 7W",
     "Spot LED, Embutir, Spot LED direcionável 9W",
@@ -142,7 +142,7 @@
     "Soquete, Gu10"
     
   ],  
-  "A  TERRAMENTO E INFRAESTRUTURA EXTERNA": [
+  "ATERRAMENTO E INFRAESTRUTURA EXTERNA": [
     "Haste de Aterramento, Haste de cobre 2,4m",
     "Caixa de Inspeção, Caixa para aterramento (PVC)",
     "Condutor de Aterramento, Cabo verde 10mm²",
@@ -152,7 +152,7 @@
     "Eletroduto Metálico, Galvanizado, Eletroduto metálico galvanizado"
     
   ],  
-  "A  CESSÓRIOS E FERRAMENTAS": [
+  "ACESSÓRIOS E FERRAMENTAS": [
     "Identificador de Cabos, Etiquetas para cabos",
     "Espaguete Termo-Retrátil, Isolamento de emendas",
     "Luva de Segurança, Luva isolante (NR10)",
@@ -172,4 +172,5 @@
     "Serra Copo, Serra copo para alvenaria"
 
   ]
+
 }
