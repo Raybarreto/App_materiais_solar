@@ -21,3 +21,9 @@ Com uma interface responsiva e intuitiva nas cores verde e laranja (simbolizando
 * **Geração de Documentos:** ReportLab (Python Library para criação de PDF)
 * **Frontend:** HTML5, CSS3 (Design Responsivo), JavaScript
 * **Design:** Paleta de cores Laranja (`#FF8C42`) e Verde (`#4CAF50`).
+
+## 📬 Contato
+Para dúvidas ou sugestões:
+- Raylaine Barreto
+- E-mail: raylainebarreto@outlook.com
+- [LinkedIn](https://www.linkedin.com/in/raylaine-barreto)
