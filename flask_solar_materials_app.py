@@ -1,25 +1,3 @@
-"""
-Flask app: Lista de Materiais para Instalação de Placas Solares (local e acessível por celular)
-- Rodar localmente e acessível via rede Wi-Fi (host=0.0.0.0)
-- SQLite para histórico
-- Gera PDF com layout visual mais bonito (ReportLab)
-- Permite upload de logo (opcional)
-- Fornece link de WhatsApp com mensagem pré-preenchida (não anexa o PDF automaticamente)
-
-Dependências:
-    pip install Flask reportlab - OK
-
-Como rodar:
-    python flask_solar_materials_app.py
-
-Abra no navegador:
-    - Computador: http://192.168.100.139:5000
-    - Celular (mesma rede Wi-Fi): http://SEU_IP_LOCAL:5000
-
-Para descobrir seu IP local (Windows): ipconfig
-Para Linux/Mac: ifconfig
-"""
-
 import os
 import sqlite3
 import json
@@ -50,6 +28,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PDF_FOLDER, exist_ok=True)
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  
+
 # Carrega os materiais do arquivo JSON
 with open("materials.json", "r", encoding="utf-8") as f:
     materials = json.load(f)
@@ -66,7 +46,6 @@ else:
     }
 
 # --- DB helpers ---
-
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -97,7 +76,6 @@ def close_connection(exception):
         db.close()
 
 # --- Utilities ---
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -123,8 +101,10 @@ def generate_pdf(list_id, client, technician, items, company_name='Sua Empresa',
 
     # Tabela de materiais
     data = [['CÓDIGO', 'DESCRIÇÃO', 'QTD', 'UN']]
-    for it in items:
-        data.append([it['code'], it['name'], str(it['qty']), it['unit']])
+    if items:
+        for it in items:
+            qty_str = str(it.get('qty', 0)) if it.get('qty') is not None else '0'
+            data.append([it.get('code', ''), it.get('name', 'N/A'), qty_str, it.get('unit', '')])
 
     table = Table(data, colWidths=[4*cm, 8*cm, 2*cm, 2*cm])
     table.setStyle(TableStyle([
@@ -156,48 +136,55 @@ def index():
 def create():
     client = request.form['client']
     technician = request.form['technician']
-    company_name = request.form.get('company_name', 'Sua Empresa')
 
-    count = int(request.form.get('count', 0))
+    # --- Lógica de coleta de itens unificada ---
     items = []
 
-    # Materiais fixos
-    for i in range(count):
-        qty = request.form.get(f'qty_{i}')
+    max_index = 0
+    for key in request.form.keys():
+        if key.startswith('qty_'):
+            try:
+                index = int(key.split('_')[1])
+                if index > max_index:
+                    max_index = index
+            except ValueError:
+                pass
+    
+    for i in range(max_index + 1):
+        qty_key = f'qty_{i}'
+        qty = request.form.get(qty_key)
+        
         if qty and float(qty) > 0:
-            items.append({
-                'code': request.form[f'code_{i}'],
-                'name': request.form[f'name_{i}'],
-                'unit': request.form[f'unit_{i}'],
-                'qty': float(qty)
-            })
-
-    # Materiais adicionados dinamicamente
-    for key in request.form:
-        if key.startswith('code_extra_'):
-            suffix = key.replace('code_extra_', '')
-            qty = request.form.get(f'qty_extra_{suffix}')
-            if qty and float(qty) > 0:
-                items.append({
-                    'code': request.form[f'code_extra_{suffix}'],
-                    'name': request.form[f'name_extra_{suffix}'],
-                    'unit': request.form[f'unit_extra_{suffix}'],
+            try:
+                item = {
+                    'code': request.form[f'code_{i}'],
+                    'name': request.form[f'name_{i}'],
+                    'unit': request.form[f'unit_{i}'],
                     'qty': float(qty)
-                })
+                }
+                items.append(item)
+            except KeyError:
+                pass
+                
+    # Processa os materiais adicionados dinamicamente (Extras, indexados por 'extra_timestamp')
+    for key in request.form.keys():
+        if key.startswith("qty_extra_"):
+            timestamp = key.split("qty_extra_")[1]
+            qty = request.form.get(key)
+            
+            if qty and float(qty) > 0:
+                item = {
+                    "code": request.form.get(f"code_extra_{timestamp}", ""),
+                    "name": request.form.get(f"name_extra_{timestamp}", ""),
+                    "unit": request.form.get(f"unit_extra_{timestamp}", ""),
+                    "qty": float(qty)
+                }
+                items.append(item)
 
-
-    # Monta lista de itens
-    items = []
-    for i in range(int(request.form['count'])):
-        qty = request.form.get(f'qty_{i}')
-        if qty and int(qty) > 0:
-            items.append({
-                'code': request.form[f'code_{i}'],
-                'name': request.form[f'name_{i}'],
-                'unit': request.form[f'unit_{i}'],
-                'qty': int(qty)
-            })
-
+    if not items:
+        flash('Nenhum material selecionado ou quantidade inválida.', 'warning')
+        return redirect(url_for('index')) 
+    
     # Salva no banco
     db = get_db()
     cur = db.cursor()
@@ -208,13 +195,13 @@ def create():
 
     # Gera PDF
     pdf_path = generate_pdf(
-    list_id,
-    client,
-    technician,
-    items,
-    company_name=CONFIG["company_name"],
-    logo_path=CONFIG["logo_path"]
-)
+        list_id,
+        client,
+        technician,
+        items,
+        company_name=CONFIG["company_name"],
+        logo_path=CONFIG["logo_path"]
+    )
     db.execute('UPDATE lists SET pdf_path = ? WHERE id = ?', (pdf_path, list_id))
     db.commit()
 
@@ -258,5 +245,5 @@ def delete(list_id):
 if __name__ == '__main__':
     with app.app_context():
         init_db()
-    # Permite acesso por celular na mesma rede Wi-Fi
+        
     app.run(host='0.0.0.0', port=5000, debug=True)
