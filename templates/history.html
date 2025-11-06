@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Histórico - Sol a Vista</title>
+    <style>
+      body { font-family: Arial, Helvetica, sans-serif; margin: 20px; font-size: 14px; }
+      h2 { color: #00796B; font-size: 20px; }
+      table { border-collapse: collapse; width: 100%; margin-top: 20px; font-size: 13px; }
+      th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+      th { background: #00796B; color: white; font-size: 13px; }
+      tr:nth-child(even) { background: #f2f2f2; }
+      a { text-decoration: none; color: #00796B; font-weight: bold; font-size: 13px; }
+      button { background: #00796B; color: white; padding: 5px 9px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
+      button:hover { background: #005b4f; }
+      .top { display: flex; justify-content: space-between; align-items: center; }
+      .logo { max-height: 100px; }
+      .center { text-align: center; font-size: 13px; }
+    </style>
+
+  </head>
+  <body>
+    <div class="top">
+      <div style="display:flex; align-items:center;">
+        {% if logo_path %}
+          <img src="{{ url_for('static', filename=logo_path.replace('static/', '')) }}" class="logo">
+        {% endif %}
+        <h2 style="margin-left:10px;">{{ company_name }} — Histórico de Listas</h2>
+      </div>
+      <div>
+        <a href="{{ url_for('index') }}">⬅ Voltar</a>
+      </div>
+    </div>
+
+    {% if listas and listas|length > 0 %}
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Técnico</th>
+            <th>Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in listas %}
+            <tr>
+              <td>{{ l.id }}</td>
+              <td>{{ l.client }}</td>
+              <td>{{ l.technician }}</td>
+              <td>{{ l.date }}</td>
+              <td>
+                <a href="{{ url_for('download_pdf', list_id=l.id) }}" target="_blank">📄 Ver PDF</a> |
+                <a href="{{ url_for('whatsapp_msg', list_id=l.id) }}" target="_blank">💬 WhatsApp</a> |
+                <a href="{{ url_for('delete', list_id=l.id) }}" onclick="return confirm('Tem certeza que deseja excluir esta lista?')">🗑 Excluir</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="center">Nenhuma lista gerada ainda.</p>
+    {% endif %}
+  </body>
+</html>
