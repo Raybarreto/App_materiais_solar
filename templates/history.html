@@ -3,65 +3,129 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Histórico - Sol a Vista</title>
+    <title>Histórico - Sol a Vista Energia Solar</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
     <style>
-      body { font-family: Arial, Helvetica, sans-serif; margin: 20px; font-size: 14px; }
-      h2 { color: #00796B; font-size: 20px; }
-      table { border-collapse: collapse; width: 100%; margin-top: 20px; font-size: 13px; }
-      th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-      th { background: #00796B; color: white; font-size: 13px; }
-      tr:nth-child(even) { background: #f2f2f2; }
-      a { text-decoration: none; color: #00796B; font-weight: bold; font-size: 13px; }
-      button { background: #00796B; color: white; padding: 5px 9px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
-      button:hover { background: #005b4f; }
-      .top { display: flex; justify-content: space-between; align-items: center; }
-      .logo { max-height: 100px; }
-      .center { text-align: center; font-size: 13px; }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        th {
+            background: var(--cor-verde); 
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f8f8;
+        }
+        
+        td:nth-child(1), 
+        td:nth-child(4), 
+        td:nth-child(5) { 
+            text-align: center;
+        }
+ 
+        td a {
+            text-decoration: none;
+            color: var(--cor-laranja); 
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 0 4px;
+            white-space: nowrap; 
+        }
+        
+        @media (max-width: 600px) {
+
+            th:nth-child(1), td:nth-child(1), 
+            th:nth-child(3), td:nth-child(3) { 
+                display: none;
+            }
+        }
+        
+        .header-link-back {
+            color: white !important;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border: 1px solid white;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
     </style>
-
   </head>
+  
   <body>
-    <div class="top">
-      <div style="display:flex; align-items:center;">
-        {% if logo_path %}
-          <img src="{{ url_for('static', filename=logo_path.replace('static/', '')) }}" class="logo">
-        {% endif %}
-        <h2 style="margin-left:10px;">{{ company_name }} — Histórico de Listas</h2>
-      </div>
-      <div>
-        <a href="{{ url_for('index') }}">⬅ Voltar</a>
-      </div>
-    </div>
+    <header>
+      <h2>Histórico de Listas de Materiais solicitados</h2>
+      <a href="{{ url_for('index') }}" class="header-link-back">⬅ Voltar</a>
+    </header>
 
-    {% if listas and listas|length > 0 %}
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Técnico</th>
-            <th>Data</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for l in listas %}
-            <tr>
-              <td>{{ l.id }}</td>
-              <td>{{ l.client }}</td>
-              <td>{{ l.technician }}</td>
-              <td>{{ l.date }}</td>
-              <td>
-                <a href="{{ url_for('download_pdf', list_id=l.id) }}" target="_blank">📄 Ver PDF</a> |
-                <a href="{{ url_for('whatsapp_msg', list_id=l.id) }}" target="_blank">💬 WhatsApp</a> |
-                <a href="{{ url_for('delete', list_id=l.id) }}" onclick="return confirm('Tem certeza que deseja excluir esta lista?')">🗑 Excluir</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p class="center">Nenhuma lista gerada ainda.</p>
-    {% endif %}
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div style="background-color: #e6ffe6; border: 1px solid #4CAF50; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if listas and listas|length > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Técnico</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in listas %}
+                    <tr>
+                        <td>{{ l.id }}</td>
+                        <td>{{ l.client }}</td>
+                        <td>{{ l.technician }}</td>
+                        <td>{{ l.date }}</td>
+                        <td>
+                            <a href="{{ url_for('download_pdf', list_id=l.id) }}" target="_blank">📄 PDF</a>
+                            <a href="{{ url_for('whatsapp_msg', list_id=l.id) }}" target="_blank">💬 WhatsApp</a>
+                            <a href="{{ url_for('delete', list_id=l.id) }}" onclick="return confirm('Tem certeza que deseja excluir esta lista?')">🗑 Excluir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="info" style="text-align: center;">Nenhuma lista gerada ainda.</p>
+        {% endif %}
+    </main>
+
+    <footer>
+        © 2025 Sol à Vista Energia Solar — Desenvolvido por Raylaine Barreto. Todos os direitos reservados.
+    </footer>
   </body>
 </html>
