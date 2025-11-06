@@ -1,158 +1,147 @@
 <!doctype html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Materiais - Sol à Vista</title>
-    
-    <style>
-      body{font-family:Arial,Helvetica,sans-serif;margin:20px}
-      .material{
-        display:flex;
-        gap:8px;
-        align-items:center;
-        margin-bottom:6px;
-      }
-      input[type=number]{width:80px}
-      .top{display:flex;gap:20px;align-items:center}
-      .logo-preview{max-height:60px} /* aumenta a logo */
-      table{border-collapse:collapse;width:100%}
-      th,td{border:1px solid #ccc;padding:6px;font-size:10px} /* diminui fonte da lista */
-      button{background:#00796B;color:#fff;padding:8px 12px;border:none;border-radius:4px;cursor:pointer}
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de Materiais - Sol à Vista</title>
 
-  </head>
-  <body>
-    <div class="header" style="justify-content: space-between;">
-      {% if logo_path %}
-      <img src="{{ url_for('static', filename=logo_path.replace('static/', '')) }}" alt="Logo" class="logo">
-      {% endif %}
-      <div style="display:flex; align-items:center;">
-      <h2 class="company-title">{{ company_name }}</h2>
-      <a href="{{ url_for('history') }}" style="font-weight:bold;">Histórico</a>
-    </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <form method="post" action="{{ url_for('create') }}">
-      <div>
-        <label>Nome do Cliente: <input required name="client"></label>
-      </div>
-      <div>
-        <label>Responsável técnico: <input required name="technician"></label>
-      </div>
-      <hr>
-      <h3>Adicionar material</h3>
+  </head>
+  <body>
+    <header>
+      <h2>Lista de Materiais - Sol à Vista Energia Solar</h2>
+      <a href="{{ url_for('history') }}">Histórico</a>
+    </header>
 
-      <label for="categoria">Categoria:</label>
-      <select id="categoria" onchange="carregarMateriais()">
-        <option value="">Selecione...</option>
-        {% for categoria in materials.keys() %}
-          <option value="{{ categoria }}">{{ categoria }}</option>
-        {% endfor %}
-      </select>
+    <main>
+      <form method="post" action="{{ url_for('create') }}">
+        <div>
+          <label>Nome do Cliente: <input required name="client"></label>
+        </div>
+        <div>
+          <label>Responsável técnico: <input required name="technician"></label>
+        </div>
+                <input type="hidden" name="count" id="material-count" value="0">
+        <hr>
 
-     <label for="material">Material:</label>
-     <select id="material">
-        <option value="">Selecione uma categoria</option>
-     </select>
+        <h3>Adicionar material</h3>
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" onchange="carregarMateriais()">
+          <option value="">Selecione...</option>
+          {% for categoria in materials.keys() %}
+          <option value="{{ categoria }}">{{ categoria }}</option>
+          {% endfor %}
+        </select>
 
-     <label for="quantidade">Quantidade:</label>
-     <input type="number" id="quantidade" min="0" value="0" style="width:80px;">
+        <label for="material">Material:</label>
+        <select id="material">
+          <option value="">Selecione uma categoria</option>
+        </select>
 
-     <button type="button" onclick="adicionarMaterial()">Adicionar</button>
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" min="0" value="0">
 
-     <hr>
+        <button type="button" onclick="adicionarMaterial()">Adicionar</button>
 
-     <ul id="lista-materiais"></ul>
+        <ul id="lista-materiais"></ul>
 
-     <script>
-        const materials = {{ materials|tojson }};
+        <h4>Adicionar novo material</h4>
+        <div id="new-material-section">
+          <label>Descrição: <input type="text" id="new_name" placeholder="Ex: Cabo 10mm²"></label>
+          <label>Unidade: <input type="text" id="new_unit" placeholder="Ex: m / un / par" style="width:60px"></label>
+          <button type="button" onclick="addMaterial()">Adicionar</button>
+        </div>
 
-        function carregarMateriais() {
-          const categoria = document.getElementById("categoria").value;
-          const materialSelect = document.getElementById("material");
-          materialSelect.innerHTML = "";
+        <div style="margin-top:20px;">
+          <button type="submit">Gerar PDF e Salvar</button>
+        </div>
+      </form>
 
-          if (categoria && materials[categoria]) {
-             materials[categoria].forEach(mat => {
-               const option = document.createElement("option");
-               option.value = mat;
-               option.text = mat;
-               materialSelect.add(option);
-             });
-         } else {
-           const option = document.createElement("option");
-           option.text = "Selecione uma categoria";
-           materialSelect.add(option);
-         }
-       }
+      <p style="margin-top:20px;">💡 Após gerar o PDF, baixe o arquivo e envie pelo WhatsApp Web, Desktop ou app do celular.</p>
+    </main>
 
-        function adicionarMaterial() {
-        const material = document.getElementById("material").value;
-        const quantidade = document.getElementById("quantidade").value;
-        if (material && quantidade > 0) {
-          const lista = document.getElementById("lista-materiais");
-          const li = document.createElement("li");
-          li.textContent = `${material} — ${quantidade} un`;
-          lista.appendChild(li);
-         }
-       }
-     </script>
+    <footer>
+      © 2025 Sol à Vista Energia Solar — Desenvolvido por Raylaine Barreto. Todos os direitos reservados.
+    </footer>
 
-    <hr>
-    <h4>Adicionar novo material</h4>
-    <div id="new-material-section">
-        <label>Código: <input type="text" id="new_code" placeholder="Ex: CAB-10mm2"></label>
-        <label>Descrição: <input type="text" id="new_name" placeholder="Ex: Cabo 10mm²"></label>
-        <label>Unidade: <input type="text" id="new_unit" placeholder="Ex: m / un / par" style="width:60px"></label>
-        <button type="button" onclick="addMaterial()">Adicionar</button>
-        </div>
+    <script>
+      const materials = {{materials|tojson }};
+      let materialIndex = 0;
+      const form = document.querySelector("form");
+      const materialCountInput = document.getElementById("material-count");
 
-    <hr>
+      function carregarMateriais() {
+        const categoria = document.getElementById("categoria").value;
+        const materialSelect = document.getElementById("material");
+        materialSelect.innerHTML = "";
 
-      <div style="margin-top:12px">
-        <button type="submit">Gerar PDF e Salvar</button>
-      </div>
-    </form>
-    
-    <script>
-    function addMaterial() {
-      const code = document.getElementById("new_code").value.trim();
-      const name = document.getElementById("new_name").value.trim();
-      const unit = document.getElementById("new_unit").value.trim();
+        if (categoria && materials[categoria]) {
+          materials[categoria].forEach(mat => {
+            const option = document.createElement("option");
+            option.value = mat;
+            option.text = mat;
+            materialSelect.add(option);
+          });
+        } else {
+          const option = document.createElement("option");
+          option.text = "Selecione uma categoria";
+          materialSelect.add(option);
+        }
+      }
 
-      if (!code || !name || !unit) {
-        alert("Preencha todos os campos antes de adicionar o material!");
-        return;
-      }
+      function adicionarMaterial() {
+        const material = document.getElementById("material").value;
+        const quantidade = document.getElementById("quantidade").value;
 
-      // Cria um novo elemento HTML com os mesmos campos da lista existente
-      const container = document.createElement("div");
-      container.classList.add("material");
-      container.innerHTML = `
-        <div style="width:200px">${code} — ${name}</div>
-        <div style="width:60px">${unit}</div>
-        <div>
-          <input type="number" name="qty_extra_${Date.now()}" min="0" placeholder="0">
-          <input type="hidden" name="code_extra_${Date.now()}" value="${code}">
-          <input type="hidden" name="name_extra_${Date.now()}" value="${name}">
-          <input type="hidden" name="unit_extra_${Date.now()}" value="${unit}">
-       </div>
-     `;
+        if (material && parseInt(quantidade) > 0) {
+          const lista = document.getElementById("lista-materiais");
+          const li = document.createElement("li");
+          li.textContent = `${material} — ${quantidade} un`;
+          lista.appendChild(li);
+          
+          form.insertAdjacentHTML("beforeend", `
+                        <input type="hidden" name="code_${materialIndex}" value="${material.substring(0, 10)}"> 
+            <input type="hidden" name="name_${materialIndex}" value="${material}">
+            <input type="hidden" name="unit_${materialIndex}" value="un">
+            <input type="hidden" name="qty_${materialIndex}" value="${quantidade}">
+          `);
 
-      // Adiciona o novo material logo antes do botão "Gerar PDF e Salvar"
-      const button = document.querySelector('button[type="submit"]');
-      button.parentNode.insertBefore(container, button);
+          materialIndex++;
+          materialCountInput.value = materialIndex;
+        }
+      }
 
-      // Limpa os campos do formulário
-      document.getElementById("new_code").value = "";
-      document.getElementById("new_name").value = "";
-      document.getElementById("new_unit").value = "";
-    }
-    </script>
+      function addMaterial() {
+        const name = document.getElementById("new_name").value.trim();
+        const unit = document.getElementById("new_unit").value.trim();
+        const tempCode = name.substring(0, 10).toUpperCase(); 
 
-    <hr>
-    <p>Dica para compartilhar no WhatsApp: após gerar o PDF, baixe o arquivo e anexe no WhatsApp Web, Desktop ou no app do celular.</p>
+        if (!name || !unit) {
+          alert("Preencha a Descrição e a Unidade antes de adicionar o material!");
+          return;
+        }
 
-  </body>
+        const container = document.createElement("div");
+        container.classList.add("material");
+        const uniqueId = Date.now();
+        
+        container.innerHTML = `
+          <div style="width:200px">(${tempCode}) — ${name}</div>
+          <div style="width:60px">${unit}</div>
+          <div>
+            <input type="number" name="qty_extra_${uniqueId}" min="0" placeholder="0">
+                        <input type="hidden" name="code_extra_${uniqueId}" value="${tempCode}"> 
+            <input type="hidden" name="name_extra_${uniqueId}" value="${name}">
+            <input type="hidden" name="unit_extra_${uniqueId}" value="${unit}">
+          </div>
+        `;
+        const button = document.querySelector('button[type="submit"]');
+        button.parentElement.parentElement.insertBefore(container, button.parentElement);
 
+        document.getElementById("new_name").value = "";
+        document.getElementById("new_unit").value = "";
+      }
+    </script>
+  </body>
 </html>
