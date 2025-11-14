@@ -1,18 +1,18 @@
 <!doctype html>
 <html lang="pt-br">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Materiais - Sol à Vista</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de Materiais - Sol à Vista</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  </head>
-  <body>
-    <header>
-      <h2>Lista de Materiais - Sol à Vista Energia Solar</h2>
-      <a href="{{ url_for('history') }}">Histórico</a>
-    </header>
+  </head>
+  <body>
+    <header>
+      <h2>Lista de Materiais - Sol à Vista Energia Solar</h2>
+      <a href="{{ url_for('history') }}">Histórico</a>
+    </header>
 
     <main>
       <form method="post" action="{{ url_for('create') }}">
@@ -22,10 +22,10 @@
         <div>
           <label>Responsável técnico: <input required name="technician"></label>
         </div>
-                <input type="hidden" name="count" id="material-count" value="0">
+          <input type="hidden" name="count" id="material-count" value="0">
         <hr>
 
-        <h3>Adicionar material</h3>
+        <h3>Adicionar Material</h3>
         <label for="categoria">Categoria:</label>
         <select id="categoria" onchange="carregarMateriais()">
           <option value="">Selecione...</option>
@@ -38,6 +38,9 @@
         <select id="material">
           <option value="">Selecione uma categoria</option>
         </select>
+        
+        <label for="unidade">Unidade:</label> 
+        <input type="text" id="unidade" placeholder="un/m/par" value="un">
 
         <label for="quantidade">Quantidade:</label>
         <input type="number" id="quantidade" min="0" value="0">
@@ -46,10 +49,12 @@
 
         <ul id="lista-materiais"></ul>
 
-        <h4>Adicionar novo material</h4>
+        <h4>Adicionar Novo Material</h4>
         <div id="new-material-section">
           <label>Descrição: <input type="text" id="new_name" placeholder="Ex: Cabo 10mm²"></label>
           <label>Unidade: <input type="text" id="new_unit" placeholder="Ex: m / un / par" style="width:60px"></label>
+          <label>Qtd: <input type="number" id="new_qty" min="1" value="1" style="width:60px"></label>
+
           <button type="button" onclick="addMaterial()">Adicionar</button>
         </div>
 
@@ -92,18 +97,19 @@
 
       function adicionarMaterial() {
         const material = document.getElementById("material").value;
+        const unidade = document.getElementById("unidade").value.trim();
         const quantidade = document.getElementById("quantidade").value;
 
-        if (material && parseInt(quantidade) > 0) {
+        if (material && parseInt(quantidade) > 0 && unidade) { 
           const lista = document.getElementById("lista-materiais");
           const li = document.createElement("li");
-          li.textContent = `${material} — ${quantidade} un`;
+          li.textContent = `${material} — ${quantidade} ${unidade}`; 
           lista.appendChild(li);
           
           form.insertAdjacentHTML("beforeend", `
-                        <input type="hidden" name="code_${materialIndex}" value="${material.substring(0, 10)}"> 
+            <input type="hidden" name="code_${materialIndex}" value="${material.substring(0, 10)}"> 
             <input type="hidden" name="name_${materialIndex}" value="${material}">
-            <input type="hidden" name="unit_${materialIndex}" value="un">
+            <input type="hidden" name="unit_${materialIndex}" value="${unidade}">
             <input type="hidden" name="qty_${materialIndex}" value="${quantidade}">
           `);
 
@@ -115,9 +121,10 @@
       function addMaterial() {
         const name = document.getElementById("new_name").value.trim();
         const unit = document.getElementById("new_unit").value.trim();
+        const qty = document.getElementById("new_qty").value;
         const tempCode = name.substring(0, 10).toUpperCase(); 
 
-        if (!name || !unit) {
+        if (!name || !unit || parseInt(qty) <= 0) {
           alert("Preencha a Descrição e a Unidade antes de adicionar o material!");
           return;
         }
@@ -128,10 +135,10 @@
         
         container.innerHTML = `
           <div style="width:200px">(${tempCode}) — ${name}</div>
-          <div style="width:60px">${unit}</div>
+          <div style="width:100px">${qty} ${unit}</div> 
           <div>
-            <input type="number" name="qty_extra_${uniqueId}" min="0" placeholder="0">
-                        <input type="hidden" name="code_extra_${uniqueId}" value="${tempCode}"> 
+            <input type="hidden" name="qty_extra_${uniqueId}" value="${qty}">
+            <input type="hidden" name="code_extra_${uniqueId}" value="${tempCode}"> 
             <input type="hidden" name="name_extra_${uniqueId}" value="${name}">
             <input type="hidden" name="unit_extra_${uniqueId}" value="${unit}">
           </div>
@@ -141,6 +148,7 @@
 
         document.getElementById("new_name").value = "";
         document.getElementById("new_unit").value = "";
+        document.getElementById("new_qty").value = "1";
       }
     </script>
   </body>
