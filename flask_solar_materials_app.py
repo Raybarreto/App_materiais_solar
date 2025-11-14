@@ -87,11 +87,12 @@ def generate_pdf(list_id, client, technician, items, company_name='Sua Empresa',
 
     doc = SimpleDocTemplate(filepath, pagesize=A4, topMargin=1.5*cm, bottomMargin=1.5*cm)
     styles = getSampleStyleSheet()
+    styleN = styles['Normal']
     elements = []
-
+    
     # Cabeçalho
     if logo_path and os.path.exists(logo_path):
-        elements.append(Image(logo_path, width=4*cm, height=2*cm))
+        elements.append(Image(logo_path, width=8*cm, height=4*cm))
         elements.append(Spacer(1, 0.3*cm))
 
     title = Paragraph(f'<b>{company_name}</b>', styles['Title'])
@@ -104,7 +105,13 @@ def generate_pdf(list_id, client, technician, items, company_name='Sua Empresa',
     if items:
         for it in items:
             qty_str = str(it.get('qty', 0)) if it.get('qty') is not None else '0'
-            data.append([it.get('code', ''), it.get('name', 'N/A'), qty_str, it.get('unit', '')])
+            descricao_paragrafo = Paragraph(it.get('name', 'N/A'), styleN)
+            data.append([
+                it.get('code', ''), 
+                descricao_paragrafo,
+                qty_str, 
+                it.get('unit', '')
+            ])
 
     table = Table(data, colWidths=[4*cm, 8*cm, 2*cm, 2*cm])
     table.setStyle(TableStyle([
