@@ -1,1 +1,193 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Relatório de Saída - SolaVista</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .ranking-table th, .ranking-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .ranking-table th {
+            background-color: var(--cor-verde);
+            color: white;
+        }
+        .ranking-table tr:nth-child(even) { background-color: #f2f2f2; }
+        
+        /* Área de Filtros */
+        .filter-box {
+            background-color: #ECEFF1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #CFD8DC;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-group label { margin-bottom: 5px; font-size: 0.9em; }
+        .filter-group input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; margin: 0; }
 
+        /* Botão Filtrar */
+        .btn-filter {
+            background-color: var(--cor-laranja);
+            color: white;
+            padding: 9px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 38px; 
+        }
+        .btn-filter:hover { background-color: #e67e22; }
+
+        .report-header-info {
+            text-align: center;
+            margin-bottom: 20px;
+            display: none; 
+        }
+
+        /* --- Estilos de Impressão (PDF) --- */
+        @media print {
+            .filter-box, header, footer, .no-print {
+                display: none !important;
+            }
+            body { background-color: white; }
+            main { max-width: 100%; padding: 0; margin: 0; }
+     
+            .report-header-info {
+                display: block !important;
+            }
+            
+            .ranking-table th {
+                background-color: #ddd !important;
+                color: black !important;
+                border: 1px solid #000;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h2>📊 Relatório de Saída de Materiais</h2>
+      <a href="{{ url_for('index') }}">⬅ Voltar</a>
+    </header>
+
+    <main>
+        <div class="filter-box">
+            <div class="filter-group">
+                <label>📅 Filtrar por Mês (Atalho):</label>
+                <input type="month" id="monthSelector" onchange="aplicarMes(this.value)">
+            </div>
+
+            <form action="{{ url_for('relatorio') }}" method="get" style="display:flex; gap:15px; align-items:flex-end;">
+                <div class="filter-group">
+                    <label>De:</label>
+                    <input type="date" name="start_date" id="startDate" value="{{ start_date }}">
+                </div>
+                <div class="filter-group">
+                    <label>Até:</label>
+                    <input type="date" name="end_date" id="endDate" value="{{ end_date }}">
+                </div>
+                <button type="submit" class="btn-filter">Filtrar</button>
+                <a href="{{ url_for('relatorio') }}" style="color:#666; font-size:0.9em; text-decoration:underline; margin-bottom:10px;">Limpar</a>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px; min-height: 400px;">
+            
+            <div class="report-header-info" style="display: block;">
+                <h2 style="margin:0;">SolaVista Energia Solar</h2>
+                <h3 style="margin:5px 0;">Relatório de Consumo de Materiais</h3>
+                <p style="font-size: 0.9em; color: #555;">
+                    Período: 
+                    {% if start_date and end_date %}
+                        <b>{{ start_date|replace('-','/') }}</b> até <b>{{ end_date|replace('-','/') }}</b>
+                    {% else %}
+                        <b>Todo o histórico</b>
+                    {% endif %}
+                    <br>
+                    Gerado em: <b>{{ data_geracao }}</b>
+                </p>
+                <hr style="border-top: 1px solid #000;">
+            </div>
+
+            {% if ranking %}
+            <table class="ranking-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Material</th>
+                        <th>Qtd. Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nome, qtd in ranking %}
+                    <tr>
+                        <td>{{ loop.index }}º</td>
+                        <td>{{ nome }}</td>
+                        <td>
+                            <span style="font-weight:bold; font-size:1.1em;">
+                                {{ qtd|int if qtd == qtd|int else qtd }}
+                            </span>
+                            <span style="color:#666; font-size:0.8em;">(un/m/par/cj)</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p style="text-align:center; padding: 20px; color: #777;">
+                    Nenhum material encontrado para o período selecionado.
+                </p>
+            {% endif %}
+        </div>
+        
+        <div class="no-print" style="margin-top: 20px; text-align: center;">
+            <button onclick="window.print()" style="background:#333; color:fff; padding:10px 20px; border:none; border-radius:4px; cursor:pointer;">
+                🖨 Imprimir / Salvar PDF
+            </button>
+        </div>
+    </main>
+
+    <footer>
+      © 2025 SolaVista Energia Solar
+    </footer>
+
+    <script>
+        // Função para preencher automaticamente as datas ao escolher o mês
+        function aplicarMes(mesAno) {
+            if (!mesAno) return;
+            
+            const [year, month] = mesAno.split('-');
+            
+            // Primeiro dia do mês
+            const firstDay = `${year}-${month}-01`;
+            
+            // Último dia do mês (calculado via JS)
+            const date = new Date(year, month, 0); 
+            const lastDay = `${year}-${month}-${date.getDate()}`;
+
+            document.getElementById('startDate').value = firstDay;
+            document.getElementById('endDate').value = lastDay;
+            
+        }
+    </script>
+  </body>
+</html>
