@@ -3,153 +3,212 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Materiais - Sol à Vista</title>
-
+    <title>Lista de Materiais - SolaVista</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
   </head>
   <body>
     <header>
-      <h2>Lista de Materiais - Sol à Vista Energia Solar</h2>
+      <h2>Lista de Materiais - SolaVista</h2>
       <a href="{{ url_for('history') }}">Histórico</a>
     </header>
 
-    <main>
-      <form method="post" action="{{ url_for('create') }}">
-        <div>
-          <label>Nome do Cliente: <input required name="client"></label>
-        </div>
-        <div>
-          <label>Responsável técnico: <input required name="technician"></label>
-        </div>
-          <input type="hidden" name="count" id="material-count" value="0">
-        <hr>
-
-        <h3>Adicionar Material</h3>
-        <label for="categoria">Categoria:</label>
-        <select id="categoria" onchange="carregarMateriais()">
-          <option value="">Selecione...</option>
-          {% for categoria in materials.keys() %}
-          <option value="{{ categoria }}">{{ categoria }}</option>
-          {% endfor %}
-        </select>
-
-        <label for="material">Material:</label>
-        <select id="material">
-          <option value="">Selecione uma categoria</option>
-        </select>
+    <main>
+      <form method="post" action="{{ url_for('create') }}">
         
-        <label for="unidade">Unidade:</label> 
-        <input type="text" id="unidade" placeholder="un/m/par" value="un">
+        <div>
+          <label>Nome do Cliente: <input required name="client" placeholder="Ex: João Silva"></label>
+        </div>
+        <div>
+          <label>Responsável técnico: <input required name="technician" placeholder="Ex: Maria Engenheira"></label>
+        </div>
 
-        <label for="quantidade">Quantidade:</label>
-        <input type="number" id="quantidade" min="0" value="0">
+        <hr>
 
-        <button type="button" onclick="adicionarMaterial()">Adicionar</button>
+        <div style="background-color: #E3F2FD; padding: 15px; border-radius: 8px; border: 1px solid #BBDEFB;">
+            <h3 style="margin-top:0; color: #1565C0; border-color: #1565C0;">Kits Prontos</h3>
+            <label for="kit-select">Carregar Lista Pronta:</label>
+            <select id="kit-select">
+                <option value="">Selecione um kit...</option>
+                {% for kit_name, kit_items in kits.items() %}
+                <option value="{{ kit_name }}">{{ kit_name }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" onclick="carregarKit()" style="background-color: #1565C0;">Carregar Kit</button>
+        </div>
 
-        <ul id="lista-materiais"></ul>
+        <h3>Adicionar Item Avulso</h3>
+        
+        <label for="categoria">Categoria:</label>
+        <select id="categoria" onchange="carregarMateriaisDropdown()">
+          <option value="">Selecione...</option>
+          {% for categoria in materials.keys() %}
+          <option value="{{ categoria }}">{{ categoria }}</option>
+          {% endfor %}
+        </select>
 
-        <h4>Adicionar Novo Material</h4>
-        <div id="new-material-section">
-          <label>Descrição: <input type="text" id="new_name" placeholder="Ex: Cabo 10mm²"></label>
-          <label>Unidade: <input type="text" id="new_unit" placeholder="Ex: m / un / par" style="width:60px"></label>
+        <label for="material">Material:</label>
+        <select id="material">
+          <option value="">Selecione uma categoria</option>
+        </select>
+
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1;">
+                <label for="unidade">Unidade:</label>
+                <input type="text" id="unidade" placeholder="un/m" value="un">
+            </div>
+            <div style="flex:1;">
+                <label for="quantidade">Qtd:</label>
+                <input type="number" id="quantidade" min="0" value="0">
+            </div>
+        </div>
+        <button type="button" onclick="adicionarDoDropdown()">Adicionar à Lista</button>
+
+        <h4>Ou Crie um Material Novo</h4>
+        <div id="new-material-section">
+          <label>Descrição: <input type="text" id="new_name" placeholder="Ex: Cabo 10mm²"></label>
+          <label>Unid: <input type="text" id="new_unit" placeholder="m" style="width:60px"></label>
           <label>Qtd: <input type="number" id="new_qty" min="1" value="1" style="width:60px"></label>
+          <button type="button" onclick="adicionarManual()">Criar</button>
+        </div>
 
-          <button type="button" onclick="addMaterial()">Adicionar</button>
-        </div>
+        <h3>Lista de Materiais (Pré-visualização)</h3>
+        <ul id="lista-materiais">
+            </ul>
+        <p id="empty-msg" style="color:#666; font-style:italic;">Nenhum item adicionado ainda.</p>
 
-        <div style="margin-top:20px;">
-          <button type="submit">Gerar PDF e Salvar</button>
-        </div>
-      </form>
+        <div style="margin-top:20px;">
+          <button type="submit">Gerar PDF e Salvar</button>
+        </div>
+      </form>
 
-      <p style="margin-top:20px;">💡 Após gerar o PDF, baixe o arquivo e envie pelo WhatsApp Web, Desktop ou app do celular.</p>
-    </main>
+      <p style="margin-top:20px; font-size:0.9em; color: #555;">
+        💡 Dica: Você pode carregar um kit pronto e depois adicionar ou remover itens conforme a necessidade do cliente.
+      </p>
+    </main>
 
-    <footer>
-      © 2025 Sol à Vista Energia Solar — Desenvolvido por Raylaine Barreto. Todos os direitos reservados.
-    </footer>
+    <footer>
+      © 2025 SolaVista Energia Solar
+    </footer>
 
-    <script>
-      const materials = {{materials|tojson }};
-      let materialIndex = 0;
-      const form = document.querySelector("form");
-      const materialCountInput = document.getElementById("material-count");
+    <script>
+  // Dados vindos do Python
+  const materials = {{ materials|tojson }};
+  const kits = {{ kits|tojson }};
+  const listaEl = document.getElementById("lista-materiais");
+  const emptyMsg = document.getElementById("empty-msg");
 
-      function carregarMateriais() {
-        const categoria = document.getElementById("categoria").value;
-        const materialSelect = document.getElementById("material");
-        materialSelect.innerHTML = "";
+  // 1. Carrega itens do Dropdown
+  function carregarMateriaisDropdown() {
+    const categoria = document.getElementById("categoria").value;
+    const materialSelect = document.getElementById("material");
+    materialSelect.innerHTML = "";
 
-        if (categoria && materials[categoria]) {
-          materials[categoria].forEach(mat => {
-            const option = document.createElement("option");
-            option.value = mat;
-            option.text = mat;
-            materialSelect.add(option);
-          });
-        } else {
-          const option = document.createElement("option");
-          option.text = "Selecione uma categoria";
-          materialSelect.add(option);
-        }
-      }
+    if (categoria && materials[categoria]) {
+        materials[categoria].forEach(mat => {
+            const option = document.createElement("option");
+            option.value = mat;
+            option.text = mat;
+            materialSelect.add(option);
+        });
+    } else {
+        const option = document.createElement("option");
+        option.text = "Selecione uma categoria";
+        materialSelect.add(option);
+    }
+  }
 
-      function adicionarMaterial() {
-        const material = document.getElementById("material").value;
-        const unidade = document.getElementById("unidade").value.trim();
-        const quantidade = document.getElementById("quantidade").value;
+  // 2. Função Central: Adiciona item com QUANTIDADE EDITÁVEL
+  function adicionarItemNaTela(name, code, unit, qty) {
+    // Remove mensagem de lista vazia
+    if(emptyMsg) emptyMsg.style.display = 'none';
 
-        if (material && parseInt(quantidade) > 0 && unidade) { 
-          const lista = document.getElementById("lista-materiais");
-          const li = document.createElement("li");
-          li.textContent = `${material} — ${quantidade} ${unidade}`; 
-          lista.appendChild(li);
-          
-          form.insertAdjacentHTML("beforeend", `
-            <input type="hidden" name="code_${materialIndex}" value="${material.substring(0, 10)}"> 
-            <input type="hidden" name="name_${materialIndex}" value="${material}">
-            <input type="hidden" name="unit_${materialIndex}" value="${unidade}">
-            <input type="hidden" name="qty_${materialIndex}" value="${quantidade}">
-          `);
+    // Gera ID único
+    const uniqueId = Date.now() + Math.floor(Math.random() * 10000);
+    const tempCode = code ? code : name.substring(0, 10).toUpperCase();
 
-          materialIndex++;
-          materialCountInput.value = materialIndex;
-        }
-      }
+    const li = document.createElement("li");
+    li.classList.add("material-item");
+    li.id = "item-" + uniqueId;
 
-      function addMaterial() {
-        const name = document.getElementById("new_name").value.trim();
-        const unit = document.getElementById("new_unit").value.trim();
-        const qty = document.getElementById("new_qty").value;
-        const tempCode = name.substring(0, 10).toUpperCase(); 
+    li.innerHTML = `
+        <div class="material-info">
+            <strong>${name}</strong>
+            <span>Cód: ${tempCode}</span>
+        </div>
 
-        if (!name || !unit || parseInt(qty) <= 0) {
-          alert("Preencha a Descrição e a Unidade antes de adicionar o material!");
-          return;
-        }
+        <div class="qty-group">
+            <label style="margin:0; font-size:0.8em; color:#888;">Qtd:</label>
+            <input type="number" name="qty_extra_${uniqueId}" value="${qty}" min="0.1" step="any" required>
+            <span>${unit}</span>
+        </div>
+        
+        <button type="button" class="btn-delete" onclick="removerItem('${uniqueId}')" title="Remover item">✕</button>
 
-        const container = document.createElement("div");
-        container.classList.add("material");
-        const uniqueId = Date.now();
-        
-        container.innerHTML = `
-          <div style="width:200px">(${tempCode}) — ${name}</div>
-          <div style="width:100px">${qty} ${unit}</div> 
-          <div>
-            <input type="hidden" name="qty_extra_${uniqueId}" value="${qty}">
-            <input type="hidden" name="code_extra_${uniqueId}" value="${tempCode}"> 
-            <input type="hidden" name="name_extra_${uniqueId}" value="${name}">
-            <input type="hidden" name="unit_extra_${uniqueId}" value="${unit}">
-          </div>
-        `;
-        const button = document.querySelector('button[type="submit"]');
-        button.parentElement.parentElement.insertBefore(container, button.parentElement);
+        <input type="hidden" name="name_extra_${uniqueId}" value="${name}">
+        <input type="hidden" name="code_extra_${uniqueId}" value="${tempCode}">
+        <input type="hidden" name="unit_extra_${uniqueId}" value="${unit}">
+    `;
 
-        document.getElementById("new_name").value = "";
-        document.getElementById("new_unit").value = "";
-        document.getElementById("new_qty").value = "1";
-      }
-    </script>
-  </body>
+    listaEl.appendChild(li);
+  }
+
+  // 3. Remove Item
+  function removerItem(id) {
+    const item = document.getElementById("item-" + id);
+    if (item) {
+        item.remove();
+    }
+    if (listaEl.children.length === 0) {
+        if(emptyMsg) emptyMsg.style.display = 'block';
+    }
+  }
+
+  // 4. Adicionar do Kit 
+  function carregarKit() {
+    const kitName = document.getElementById("kit-select").value;
+    if (!kitName || !kits[kitName]) {
+        alert("Selecione um kit válido!");
+        return;
+    }
+    // Se já houver itens, pergunta se quer adicionar por cima
+    if (listaEl.children.length > 0 && listaEl.children[0].id !== 'empty-msg') {
+        if(!confirm("Deseja adicionar os itens deste kit à lista atual?")) return;
+    }
+    
+    const itensKit = kits[kitName];
+    itensKit.forEach(item => {
+        adicionarItemNaTela(item.name, item.code, item.unit, item.qty);
+    });
+  }
+
+  // 5. Adicionar do Dropdown 
+  function adicionarDoDropdown() {
+    const name = document.getElementById("material").value;
+    const unit = document.getElementById("unidade").value;
+    const qty = document.getElementById("quantidade").value;
+
+    if (name && unit && parseFloat(qty) > 0) {
+        adicionarItemNaTela(name, "", unit, qty);
+        document.getElementById("quantidade").value = 0;
+    } else {
+        alert("Preencha o material e uma quantidade válida.");
+    }
+  }
+
+  // 6. Adicionar Manual
+  function adicionarManual() {
+    const name = document.getElementById("new_name").value;
+    const unit = document.getElementById("new_unit").value;
+    const qty = document.getElementById("new_qty").value;
+
+    if (name && unit && parseFloat(qty) > 0) {
+        adicionarItemNaTela(name, "", unit, qty);
+        document.getElementById("new_name").value = "";
+        document.getElementById("new_qty").value = 1;
+    } else {
+        alert("Preencha descrição e quantidade.");
+    }
+  }
+</script>
+  </body>
 </html>
