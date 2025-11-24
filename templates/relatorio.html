@@ -5,83 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Relatório de Saída - SolaVista</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        .ranking-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .ranking-table th, .ranking-table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        .ranking-table th {
-            background-color: var(--cor-verde);
-            color: white;
-        }
-        .ranking-table tr:nth-child(even) { background-color: #f2f2f2; }
-        
-        /* Área de Filtros */
-        .filter-box {
-            background-color: #ECEFF1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #CFD8DC;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: flex-end;
-        }
-        
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .filter-group label { margin-bottom: 5px; font-size: 0.9em; }
-        .filter-group input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; margin: 0; }
-
-        /* Botão Filtrar */
-        .btn-filter {
-            background-color: var(--cor-laranja);
-            color: white;
-            padding: 9px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            height: 38px; 
-        }
-        .btn-filter:hover { background-color: #e67e22; }
-
-        .report-header-info {
-            text-align: center;
-            margin-bottom: 20px;
-            display: none; 
-        }
-
-        /* --- Estilos de Impressão (PDF) --- */
-        @media print {
-            .filter-box, header, footer, .no-print {
-                display: none !important;
-            }
-            body { background-color: white; }
-            main { max-width: 100%; padding: 0; margin: 0; }
-     
-            .report-header-info {
-                display: block !important;
-            }
-            
-            .ranking-table th {
-                background-color: #ddd !important;
-                color: black !important;
-                border: 1px solid #000;
-            }
-        }
-    </style>
+   
   </head>
   <body>
     <header>
@@ -171,16 +95,11 @@
     </footer>
 
     <script>
-        // Função para preencher automaticamente as datas ao escolher o mês
         function aplicarMes(mesAno) {
             if (!mesAno) return;
             
             const [year, month] = mesAno.split('-');
-            
-            // Primeiro dia do mês
-            const firstDay = `${year}-${month}-01`;
-            
-            // Último dia do mês (calculado via JS)
+            const firstDay = `${year}-${month}-01`;     
             const date = new Date(year, month, 0); 
             const lastDay = `${year}-${month}-${date.getDate()}`;
 
