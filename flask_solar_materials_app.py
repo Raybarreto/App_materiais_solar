@@ -21,7 +21,7 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 PDF_FOLDER = os.path.join(BASE_DIR, 'pdfs')
 DB_PATH = os.path.join(BASE_DIR, 'history.db')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-JSON_PATH = os.path.join(os.path.dirname(file), "materials.json")
+JSON_PATH = os.path.join(os.path.dirname(__file__), "materials.json")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PDF_FOLDER, exist_ok=True)
