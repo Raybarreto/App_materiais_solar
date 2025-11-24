@@ -21,6 +21,7 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 PDF_FOLDER = os.path.join(BASE_DIR, 'pdfs')
 DB_PATH = os.path.join(BASE_DIR, 'history.db')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+JSON_PATH = os.path.join(os.path.dirname(file), "materials.json")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PDF_FOLDER, exist_ok=True)
@@ -29,28 +30,63 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # Carrega materiais do JSON
-with open("materials.json", "r", encoding="utf-8") as f:
+with open(JSON_PATH, "r", encoding="utf-8") as f:
     materials = json.load(f)
 
 # --- Definição dos Kits Prontos ---
 KITS = {
-    "Kit 3 KWp - Básico": [
-        {"name": "Painel Solar 550W", "code": "PNL550", "qty": 6, "unit": "un"},
-        {"name": "Inversor 3KW", "code": "INV003", "qty": 1, "unit": "un"},
-        {"name": "Cabo Solar 6mm Vermelho", "code": "CABV6", "qty": 50, "unit": "m"},
-        {"name": "Cabo Solar 6mm Preto", "code": "CABP6", "qty": 50, "unit": "m"},
-        {"name": "Conector MC4 Par", "code": "MC4PAR", "qty": 4, "unit": "par"},
-        {"name": "Estrutura de Fixação Telhado", "code": "ESTTEL", "qty": 1, "unit": "cj"},
-        {"name": "String Box CC", "code": "STRBX1", "qty": 1, "unit": "un"}
+    "Kit Infra - 1 Circuito": [
+        {"name": "Alça Pré-Moldada", "code": "ALCAPM", "qty": 4, "unit": "un"},
+        {"name": "Bucha e Arruela p/ Eletroduto 1\"", "code": "BA1P", "qty": 2, "unit": "cj"},
+        {"name": "Cabo PP 3X6,0mm²", "code": "CABPP36", "qty": 15, "unit": "m"},
+        {"name": "Caixa de Inspeção de Aterramento (PVC)", "code": "CXTERRA", "qty": 1, "unit": "un"},
+        {"name": "Condulete 3/4 pol", "code": "COND34", "qty": 1, "unit": "un"},
+        {"name": "Cabo Verde 6mm² (Aterramento)", "code": "CABVER6", "qty": 10, "unit": "m"},
+        {"name": "Conector de Haste 5/8", "code": "CONHST", "qty": 1, "unit": "un"},
+        {"name": "Curva Curta 90° Eletroduto 3/4", "code": "CRV9034", "qty": 1, "unit": "un"},
+        {"name": "Disjuntor Unipolar 25A", "code": "DJU25", "qty": 1, "unit": "un"},
+        {"name": "Disjuntor Unipolar 32A", "code": "DJU32", "qty": 1, "unit": "un"},
+        {"name": "DPS Classe II (Protetor de Surto)", "code": "DPSII", "qty": 1, "unit": "un"},
+        {"name": "Eletroduto Rígido Roscável 3/4", "code": "ELTR34", "qty": 1, "unit": "un"},
+        {"name": "Fecho de Aço p/ Fita", "code": "FCHITA", "qty": 1, "unit": "un"},
+        {"name": "Fita de Aço", "code": "FITACO", "qty": 5, "unit": "m"},
+        {"name": "Haste de Aterramento Cobre 2,4m", "code": "HST240", "qty": 1, "unit": "un"},
+        {"name": "Isolador de Porcelana", "code": "ISOPOR", "qty": 1, "unit": "un"},
+        {"name": "Luva Roscável 3/4", "code": "LUV34", "qty": 1, "unit": "un"},
+        {"name": "Parafuso Autobrocante", "code": "PARBRO", "qty": 10, "unit": "un"},
+        {"name": "Parafuso c/ Bucha 8mm", "code": "PARBU8", "qty": 4, "unit": "cj"},
+        {"name": "QDC Embutir p/ 5 Disjuntores", "code": "QDC05", "qty": 1, "unit": "un"},
+        {"name": "Rex Galvanizado", "code": "REXGAL", "qty": 1, "unit": "un"},
+        {"name": "Terminal Forquilha", "code": "TMFORQ", "qty": 1, "unit": "un"},
+        {"name": "Terminal Tubular Duplo 6mm²", "code": "TMDBL6", "qty": 1, "unit": "un"},
+        {"name": "Terminal Tubular Simples 6mm²", "code": "TMSPL6", "qty": 1, "unit": "un"},
+        {"name": "Unidut Cônico 3/4", "code": "UNIC34", "qty": 1, "unit": "un"},
+        {"name": "Unidut 3/4", "code": "UNI34", "qty": 1, "unit": "un"}
     ],
-    "Kit 5 KWp - Intermediário": [
-        {"name": "Painel Solar 550W", "code": "PNL550", "qty": 10, "unit": "un"},
-        {"name": "Inversor 5KW", "code": "INV005", "qty": 1, "unit": "un"},
-        {"name": "Cabo Solar 6mm Vermelho", "code": "CABV6", "qty": 80, "unit": "m"},
-        {"name": "Cabo Solar 6mm Preto", "code": "CABP6", "qty": 80, "unit": "m"},
-        {"name": "Conector MC4 Par", "code": "MC4PAR", "qty": 6, "unit": "par"},
-        {"name": "Estrutura de Fixação Solo", "code": "ESTSOL", "qty": 1, "unit": "cj"},
-        {"name": "String Box CC/CA", "code": "STRBX2", "qty": 1, "unit": "un"}
+
+    "Kit Infra - 2 Circuitos": [
+        {"name": "Alça Pré-Moldada", "code": "ALCAPM", "qty": 4, "unit": "un"},
+        {"name": "Bucha e Arruela p/ Eletroduto 1\"", "code": "BA1P", "qty": 2, "unit": "cj"},
+        {"name": "Cabo PP 3X6,0mm²", "code": "CABPP36", "qty": 15, "unit": "m"},
+        {"name": "Caixa de Inspeção (Terra) PVC", "code": "CXTERRA", "qty": 1, "unit": "un"},
+        {"name": "Condulete 1\"", "code": "CDL1P", "qty": 1, "unit": "un"},
+        {"name": "Cabo Verde 6mm² (Aterramento)", "code": "CABVER6", "qty": 10, "unit": "m"},
+        {"name": "Conector de Haste 5/8", "code": "CONHST", "qty": 1, "unit": "un"},
+        {"name": "Curva Curta 90° Eletroduto 1\"", "code": "CRV901P", "qty": 1, "unit": "un"},
+        {"name": "Disjuntor Unipolar 25A", "code": "DJU25", "qty": 1, "unit": "un"},
+        {"name": "Disjuntor Unipolar 32A", "code": "DJU32", "qty": 1, "unit": "un"},
+        {"name": "DPS Classe II (Protetor de Surto)", "code": "DPSII", "qty": 1, "unit": "un"},
+        {"name": "Eletroduto Rígido Roscável 3/4\"", "code": "ELTR34", "qty": 1, "unit": "un"},
+        {"name": "Haste de Aterramento Cobre 2,4m", "code": "HST240", "qty": 1, "unit": "un"},
+        {"name": "Luva Roscável 1\"", "code": "LUV1P", "qty": 1, "unit": "un"},
+        {"name": "Parafuso Autobrocante", "code": "PARBRO", "qty": 10, "unit": "un"},
+        {"name": "Parafuso c/ Bucha 8mm", "code": "PARBU8", "qty": 4, "unit": "cj"},
+        {"name": "QDC Embutir p/ 5 Disjuntores", "code": "QDC05", "qty": 1, "unit": "un"},
+        {"name": "Terminal Forquilha", "code": "TMFORQ", "qty": 2, "unit": "un"},
+        {"name": "Terminal Tubular Duplo 6mm²", "code": "TMDBL6", "qty": 2, "unit": "un"},
+        {"name": "Terminal Tubular Simples 6mm²", "code": "TMSPL6", "qty": 2, "unit": "un"},
+        {"name": "Unidut Cônico 1\"", "code": "UNIC1P", "qty": 1, "unit": "un"},
+        {"name": "Unidut 1\"", "code": "UNI1P", "qty": 1, "unit": "un"}    
     ]
 }
 
@@ -93,7 +129,6 @@ def generate_pdf(list_id, client, technician, items, company_name='Sua Empresa',
     filename = f'lista_{list_id}_{now}.pdf'
     filepath = os.path.join(PDF_FOLDER, filename)
 
-    # Margens ajustadas
     doc = SimpleDocTemplate(filepath, pagesize=A4, topMargin=1.5*cm, bottomMargin=1.5*cm, leftMargin=1.5*cm, rightMargin=1.5*cm)
     styles = getSampleStyleSheet()
     styleN = styles['Normal']
@@ -134,7 +169,6 @@ def generate_pdf(list_id, client, technician, items, company_name='Sua Empresa',
                 it.get('unit', '')
             ])
 
-    # Larguras das colunas ajustadas para A4
     col_widths = [3.5*cm, 10.5*cm, 2*cm, 2*cm]
     table = Table(data, colWidths=col_widths)
     
@@ -153,7 +187,8 @@ def generate_pdf(list_id, client, technician, items, company_name='Sua Empresa',
     elements.append(table)
 
     # --- 3. Área de Assinaturas ---
-    elements.append(Spacer(1, 2.5*cm))    
+    elements.append(Spacer(1, 2.5*cm))
+
     ass_data = [
         ["___________________________________", "___________________________________"],
         ["Responsável pela Separação/Entrega", "Técnico responsável pela retirada"],
@@ -173,13 +208,11 @@ def generate_pdf(list_id, client, technician, items, company_name='Sua Empresa',
 
     elements.append(ass_table)
     
-    # Gera o PDF
     doc.build(elements)
     return filepath
 
 @app.route('/')
 def index():
-    # Passamos 'kits' para o template
     return render_template('index.html', materials=materials, kits=KITS, company_name=CONFIG["company_name"])
 
 @app.route('/create', methods=['POST'])
@@ -188,7 +221,7 @@ def create():
     technician = request.form['technician']
     items = []
 
-    # Processa todos os itens (tanto manuais quanto de kits) usando a logica "extra"
+    # Processa todos os itens (tanto manuais quanto de kits) 
     for key in request.form.keys():
         if key.startswith("qty_extra_"):
             unique_id = key.split("qty_extra_")[1]
@@ -264,13 +297,11 @@ def relatorio():
     query = "SELECT items, date FROM lists"
     params = []
 
-    # Se tiver datas selecionadas, filtra no SQL
     if start_date and end_date:
         query += " WHERE date >= ? AND date <= ?"
         params.append(start_date + "T00:00:00")
         params.append(end_date + "T23:59:59")
-    
-    # Executa a busca
+
     rows = db.execute(query, params).fetchall()
     
     totais = {}
@@ -293,7 +324,6 @@ def relatorio():
             continue
 
     ranking = sorted(totais.items(), key=lambda x: x[1], reverse=True)
-    
     data_geracao = datetime.now().strftime("%d/%m/%Y às %H:%M")
 
     return render_template(
@@ -305,6 +335,4 @@ def relatorio():
     )
 
 if __name__ == '__main__':
-    with app.app_context():
-        init_db()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    pass
