@@ -119,10 +119,8 @@
 
   // 2. Função Central: Adiciona item com QUANTIDADE EDITÁVEL
   function adicionarItemNaTela(name, code, unit, qty) {
-    // Remove mensagem de lista vazia
     if(emptyMsg) emptyMsg.style.display = 'none';
 
-    // Gera ID único
     const uniqueId = Date.now() + Math.floor(Math.random() * 10000);
     const tempCode = code ? code : name.substring(0, 10).toUpperCase();
 
@@ -152,7 +150,6 @@
     listaEl.appendChild(li);
   }
 
-  // 3. Remove Item
   function removerItem(id) {
     const item = document.getElementById("item-" + id);
     if (item) {
