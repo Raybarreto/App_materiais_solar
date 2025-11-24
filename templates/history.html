@@ -7,79 +7,13 @@
     
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
-    <style>
-
-        main {
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            font-size: 0.9em;
-        }
-
-        th {
-            background: var(--cor-verde); 
-            color: white;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        tr:nth-child(even) {
-            background: #f8f8f8;
-        }
-        
-        td:nth-child(1), 
-        td:nth-child(4), 
-        td:nth-child(5) { 
-            text-align: center;
-        }
- 
-        td a {
-            text-decoration: none;
-            color: var(--cor-laranja); 
-            font-weight: bold;
-            font-size: 0.9em;
-            margin: 0 4px;
-            white-space: nowrap; 
-        }
-        
-        @media (max-width: 600px) {
-
-            th:nth-child(1), td:nth-child(1), 
-            th:nth-child(3), td:nth-child(3) { 
-                display: none;
-            }
-        }
-        
-        .header-link-back {
-            color: white !important;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 5px 10px;
-            border: 1px solid white;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-    </style>
   </head>
   
   <body>
     <header>
       <h2>Histórico de Listas de Materiais solicitados</h2>
       <a href="{{ url_for('index') }}" class="header-link-back">⬅ Voltar</a>
-      <a href="{{ url_for('relatorio') }}" style="background-color: #FFF; color: var(--cor-laranja);">📊 Relatórios</a>
+      <a href="{{ url_for('relatorio') }}" class="header-link-back">📊 Relatórios</a>
     </header>
 
     <main>
