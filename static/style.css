@@ -1,8 +1,8 @@
 :root {
-    --cor-laranja: #FF8C42; 
-    --cor-verde: #4CAF50; 
+    --cor-laranja: #FF8C42;
+    --cor-verde: #4CAF50;
     --cor-vermelho: #F44336;
-    --cor-fundo-claro: #F9FBE7; 
+    --cor-fundo-claro: #F9FBE7;
     --cor-texto: #212121;
     --sombra: 0 4px 6px rgba(0,0,0,0.1);
 }
@@ -17,12 +17,28 @@ body {
     line-height: 1.6;
 }
 
-/* --- Cabeçalho --- */
+/* --- Layout Principal --- */
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.85em;
+    margin-top: 40px;
+}
+
+/* --- Cabeçalho (Header) --- */
 header {
     background-color: var(--cor-laranja);
     color: white;
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 15px 20px;
@@ -31,65 +47,92 @@ header {
 }
 
 header h2 { margin: 0; font-size: 1.4em; font-weight: bold; }
-header a {
-    color: white; font-weight: bold; text-decoration: underline;
-    font-size: 0.9em; margin-top: 5px; padding: 5px 10px;
-    border: 1px solid white; border-radius: 4px; transition: background-color 0.3s;
+
+header a, .header-link-back {
+    color: white !important;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 5px 10px;
+    border: 1px solid white;
+    border-radius: 4px;
+    transition: background-color 0.3s;
 }
-header a:hover { background-color: rgba(255, 255, 255, 0.2); }
+header a:hover, .header-link-back:hover { background-color: rgba(255, 255, 255, 0.2); }
 
-/* --- Main --- */
-main { padding: 20px; max-width: 800px; margin: 0 auto; }
-
+/* --- Títulos e Linha Divisória --- */
 h3, h4 {
     color: var(--cor-verde);
     border-bottom: 2px solid var(--cor-laranja);
-    padding-bottom: 5px; margin-top: 25px; font-size: 1.2em;
+    padding-bottom: 5px;
+    margin-top: 25px;
+    font-size: 1.2em;
 }
 
 hr { border: 0; border-top: 1px dashed var(--cor-laranja); margin: 20px 0; }
 
-/* Inputs */
+/* --- Formulário (Inputs e Labels) --- */
 input[type=text], input[type=number], select {
-    width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px;
-    border: 1px solid #ccc; border-radius: 6px; font-size: 1em;
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
 }
 input:focus, select:focus {
-    border-color: var(--cor-laranja); box-shadow: 0 0 5px rgba(255, 140, 66, 0.5); outline: none;
+    border-color: var(--cor-laranja);
+    box-shadow: 0 0 5px rgba(255, 140, 66, 0.5);
+    outline: none;
 }
 label { display: block; margin-top: 10px; font-weight: bold; color: #333; }
 
-/* Botões */
+/* --- Botões Gerais --- */
 button {
-    background: var(--cor-verde); color: #fff; padding: 10px 15px;
-    border: none; border-radius: 6px; cursor: pointer;
-    font-size: 1em; font-weight: bold;
+    background: var(--cor-verde);
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
     transition: background-color 0.3s, transform 0.1s;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 button:hover { background: #388E3C; transform: translateY(-1px); }
 
-button[type="submit"] { background: var(--cor-laranja); width: 100%; margin-top: 20px; }
+/* Botão de Envio (Laranja) */
+button[type="submit"] {
+    background: var(--cor-laranja);
+    width: 100%;
+    margin-top: 20px;
+}
 button[type="submit"]:hover { background: #E67E22; }
 
 /* Botão de Remover Item (X) */
 .btn-delete {
     background-color: var(--cor-vermelho);
     color: white;
-    width: 30px; height: 30px;
+    width: 32px;
+    height: 32px;
     padding: 0;
-    border-radius: 50%;
-    font-size: 0.9em;
-    line-height: 1;
-    display: flex; align-items: center; justify-content: center;
-    margin-left: 10px;
+    border-radius: 4px;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .btn-delete:hover { background-color: #D32F2F; }
 
-/* Lista de Materiais */
+/* --- Lista de Materiais --- */
 #lista-materiais { list-style: none; padding: 0; margin-top: 10px; }
 
-/* Item da lista */
 .material-item {
     background: #fff;
     border-left: 5px solid var(--cor-verde);
@@ -97,29 +140,18 @@ button[type="submit"]:hover { background: #E67E22; }
     margin-bottom: 8px;
     border-radius: 4px;
     display: flex;
-    flex-wrap: wrap; 
-    justify-content: space-between; 
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    gap: 10px; 
+    gap: 10px;
 }
 
-.material-info {
-    flex-grow: 1;
-    min-width: 150px; 
-}
+.material-info { flex-grow: 1; min-width: 150px; }
+.material-info strong { display: block; font-size: 1em; }
+.material-info span { font-size: 0.85em; color: #666; }
 
-.material-info strong {
-    display: block;
-    font-size: 1em;
-}
-
-.material-info span {
-    font-size: 0.85em;
-    color: #666;
-}
-
-/* Estilo para o grupo de Quantidade Editável */
+/* Quantidade Editável */
 .qty-group {
     display: flex;
     align-items: center;
@@ -129,7 +161,6 @@ button[type="submit"]:hover { background: #E67E22; }
     border-radius: 4px;
     border: 1px solid #ddd;
 }
-
 .qty-group input[type=number] {
     width: 70px;
     margin: 0;
@@ -137,51 +168,125 @@ button[type="submit"]:hover { background: #E67E22; }
     text-align: center;
     font-weight: bold;
     border: 1px solid #ccc;
-    margin-bottom: 0; 
+    margin-bottom: 0;
     margin-top: 0;
 }
-
 .qty-group span {
     font-weight: bold;
     font-size: 0.9em;
     color: #555;
-    min-width: 30px; 
+    min-width: 30px;
 }
 
-/* Botão de Remover (X) */
-.btn-delete {
-    background-color: var(--cor-vermelho);
-    color: white;
-    width: 32px; 
-    height: 32px;
-    padding: 0;
-    border-radius: 4px; 
-    font-size: 1em;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-    flex-shrink: 0;
-    margin-left: 5px;
-}
-
-/* Area de novo material manual */
+/* Área de Novo Material Manual */
 #new-material-section {
     display: flex; flex-direction: column; gap: 10px;
     padding: 15px; border: 1px solid #ddd; border-radius: 8px;
     background-color: white; margin-bottom: 20px;
 }
 
-/* Desktop Responsividade */
+/* --- Tabelas (Geral) --- */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-size: 0.9em;
+}
+
+th {
+    background: var(--cor-verde);
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+tr:nth-child(even) { background: #f8f8f8; }
+
+td:nth-child(1),
+td:nth-child(4),
+td:nth-child(5) { text-align: center; }
+
+td a {
+    text-decoration: none;
+    color: var(--cor-laranja);
+    font-weight: bold;
+    font-size: 0.9em;
+    margin: 0 4px;
+    white-space: nowrap;
+}
+
+/* Estilos Específicos para Tabela de Ranking */
+.ranking-table { margin-top: 10px; }
+.ranking-table th, .ranking-table td { padding: 12px; }
+.ranking-table th { background-color: var(--cor-verde); color: white; }
+.ranking-table tr:nth-child(even) { background-color: #f2f2f2; }
+
+/* Área de Filtros */
+.filter-box {
+    background-color: #ECEFF1;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #CFD8DC;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+.filter-group { display: flex; flex-direction: column; }
+.filter-group label { margin-bottom: 5px; font-size: 0.9em; }
+.filter-group input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; margin: 0; }
+
+/* Botão Filtrar (Laranja) */
+.btn-filter {
+    background-color: var(--cor-laranja);
+    color: white;
+    padding: 9px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    height: 38px;
+}
+.btn-filter:hover { background-color: #e67e22; }
+
+.report-header-info {
+    text-align: center;
+    margin-bottom: 20px;
+    display: none;
+}
+
+/* --- Responsividade (Desktop) --- */
 @media (min-width: 768px) {
     header { flex-direction: row; justify-content: space-between; }
     header h2 { font-size: 1.6em; }
-    
     #new-material-section { flex-direction: row; align-items: flex-end; gap: 15px; }
     #new-material-section > label { flex: 1; }
     #new-material-section > button { width: auto; flex-shrink: 0; }
 }
 
-footer {
-    background-color: #333; color: #fff; text-align: center;
-    padding: 15px; font-size: 0.85em; margin-top: 40px;
+/* Responsividade (Tabela - Mobile) */
+@media (max-width: 600px) {
+    th:nth-child(1), td:nth-child(1),
+    th:nth-child(3), td:nth-child(3) { display: none; }
+}
+
+/* --- Estilos de Impressão (PDF) --- */
+@media print {
+    .filter-box, header, footer, .no-print { display: none !important; }
+    body { background-color: white; }
+    main { max-width: 100%; padding: 0; margin: 0; }
+    .report-header-info { display: block !important; }
+    .ranking-table th {
+        background-color: #ddd !important;
+        color: black !important;
+        border: 1px solid #000;
+    }
 }
